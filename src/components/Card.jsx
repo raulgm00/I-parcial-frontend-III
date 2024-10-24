@@ -9,10 +9,12 @@ const Card = () => {
   console.log(selected);
   return (
     <div>
-      { selected ? <Form selected={selected}/> : null}
-      {espectaculos.map((espectaculo) => (
-        <Espectaculo key={espectaculo.id} recipe={espectaculo} setSelected={setSelected}/>
-      ))}
+      { selected ? (<Form selected={selected}/>) : 
+      (
+        espectaculos.map((espectaculo) => (
+          <Espectaculo key={espectaculo.id} recipe={espectaculo} setSelected={setSelected}/>
+        ))
+      )}
     </div>
   );
 };

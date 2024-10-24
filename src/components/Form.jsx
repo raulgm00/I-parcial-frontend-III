@@ -7,7 +7,12 @@ const Form = ({selected}) => {
         nombre : "",
         email: "",
         flag: false,
+        edad: 0,
+        promocion: "",
     })
+
+    const [show, setShow] = useState(false);
+    const [error, setError] = useState("");
 
     const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
@@ -15,35 +20,75 @@ const Form = ({selected}) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         //Aqui van validaciones de campos
-        setCustomer({...customer, flag : true });
-        console.table(customer);
-    }
+       
+        if (!(customer.edad > 0)) {
+          setError("La edad no es válida.");
+          setShow(false);
+          return;
+        }
+    
+        if (customer.nombre.trim().length < 3) {
+          setError("El nombre debe tener al menos 3 caracteres");
+          setShow(false);
+          return;
+        }
+    
+        if (!emailRegex.test(customer.email)) {
+          setError("El correo electrónico no es válido.");
+          setShow(false);
+          return;
+        }
+    
+        if (customer.promocion === "") {
+          setError("Debes seleccionar una promoción.");
+          setShow(false);
+          return;
+        }      
 
-    /*Evento Dinamico de escucha */
+        // Si todo está bien
+        setError(""); // Resetea el error
+        setShow(true);
+        setCustomer({ ...customer, flag: true });
+      };
+    
+      /*Evento Dinamico de escucha */
     const handleChange = (e) => {
         e.preventDefault();
-        // console.table(e.target)
-        //Recibe el identificador del tag
-        console.log('clave',e.target.name);
-        //Recibe el valor del identificador del tag
-        console.log('valor',e.target.value);
-        //Aqui van validaciones de campos
         setCustomer({...customer, [e.target.name]: e.target.value});
         
     }
 
   return (
-    <div>
+    <>
+    {customer.flag ? ( <Message recipe={customer} />) 
+    :
+      (
+        <div>
       <form onSubmit={handleSubmit}>
-        <label >Nombre: </label>
+        <label>Nombre: </label>
         <input type="text"  name="nombre" value={customer.nombre} onChange={handleChange}/>
-        <label >Email: </label>
+        <label>Email: </label>
         <input type="email"  name="email" value={customer.email} onChange={handleChange}/>
+        <label>Edad: </label>
+        <input type="number"  name="edad" value={customer.edad} onChange={handleChange}/>
+        <label>Promocion: </label>
+        <select name="promocion" value={customer.promocion} onChange={handleChange}>
+          <option value="">Selecciona una promocion</option>
+          <option value="2x1">2x1</option>
+          <option value="comida">Comida gratis</option>
+          <option value="baños">Baños limpios</option>
+          <option value="VIP">vip</option>
+        </select>
         <button >Comprar entrada de {selected.artista}</button>
       </form>
 
-      {customer.flag && <Message nombre={customer.nombre} email={customer.email} /> }
+      {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
+      )
+    }
+    
+    </>
+    
   );
 };
 
